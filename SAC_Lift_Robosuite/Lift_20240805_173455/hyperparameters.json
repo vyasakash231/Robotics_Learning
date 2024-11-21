@@ -1,0 +1,23 @@
+{
+    "seed": 0,
+    "no_of_episodes": 10000,
+    "buffer_memory_size": 1000000,
+    "gamma": 0.99,
+    "tau": 0.015,
+    "mini_batch_size": 512,
+    "steps_before_learning_starts": 5000,
+    "policy_learning_rate": 0.0003,
+    "Q_learning_rate": 0.0001,
+    "policy_optimizer": "Adam",
+    "Q_optimizer": "AdamW",
+    "weight_decay": 0.0005,
+    "target_network_update_frequency": 1,
+    "constant_alpha": 0.2,
+    "autotune_used": true,
+    "save_model_after_these_many_steps": 50000,
+    "episode_length:": 500,
+    "no_of_neurons": 256,
+    "no_of_layers": 2,
+    "controller_type": "OSC_POSE",
+    "control_freq": 25
+}
