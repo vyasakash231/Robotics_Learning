@@ -35,6 +35,7 @@ class Agent:
         self.batch_size = batch_size   
         self.target_network_frequency = target_frequency
         self.writer = SummaryWriter(folder_name)
+        self.device = device
 
         self.qf1 = SoftQNetwork(obs_shape, act_shape).to(device)
         self.qf2 = SoftQNetwork(obs_shape, act_shape).to(device)
@@ -64,6 +65,12 @@ class Agent:
         self.actor.train(True)
         self.qf1.train(True)
         self.qf2.train(True)
+
+        state_vec = torch.FloatTensor(state_vec).to(self.device)
+        action_vec = torch.FloatTensor(action_vec).to(self.device)
+        reward_vec = torch.FloatTensor(reward_vec).to(self.device)
+        next_state_vec = torch.FloatTensor(next_state_vec).to(self.device)
+        done_vector = torch.FloatTensor(done_vector).to(self.device)
 
         '''ALGO LOGIC: training.'''
         # Train Critic
@@ -173,7 +180,7 @@ if __name__ == '__main__':
     env_suite = suite.make(env_name="PickPlaceMilk",    # try with other tasks like "Stack" and "Door"
         robots="UR5e",       # try with other robots like "Sawyer","Jaco","Panda","Kinova Gen3","Baxter"
         controller_configs=suite.load_controller_config(default_controller=controller_type),  # controller option --> OSC_POSE, OSC_POSITION, JOINT_POSITION, JOINT_VELOCITY, and JOINT_TORQUE.
-        has_renderer=False,
+        has_renderer=True,
         use_object_obs=True,   # provide object observations to agent
         use_camera_obs=False,  # Take camera image as observation data from the environment (For CNN)
         render_camera="frontview",  # to view robot from front view
@@ -246,7 +253,7 @@ if __name__ == '__main__':
     
     save_hyperparameters_to_json(folder_name,"hyperparameters",hyperparameters)
 
-    buffer_memory = ReplayBuffer(buffer_size, observation_shape, action_shape, device)
+    buffer_memory = ReplayBuffer(buffer_size, observation_shape, action_shape)
     buffer_memory.load_from_csv(filename="demo/expert_demonstration.npz")
 
     time.sleep(2)
@@ -256,6 +263,7 @@ if __name__ == '__main__':
         score = 0
         obs = env.reset()
         while True:
+            env.render()
             # ALGO LOGIC: put action logic here
             if global_step < learning_starts:
                 action = env.action_space.sample()
@@ -297,6 +305,7 @@ if __name__ == '__main__':
 
             # TRY NOT TO MODIFY: record rewards for plotting purposes
             if done or global_step % max_episode_length == 0:
+                # print(done, global_step)
                 reward_history.append(score)   
                 avg_reward = np.mean(reward_history[-100:])
                 SAC_agent.store_reward(i, score, avg_reward)  # store reward

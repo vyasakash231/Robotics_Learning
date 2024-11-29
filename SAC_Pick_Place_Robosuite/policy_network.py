@@ -58,7 +58,7 @@ class SquashedNormal(distributions.transformed_distribution.TransformedDistribut
 class Actor(nn.Module):
     """torch.distributions implementation of an diagonal Gaussian policy."""
     def __init__(self, obs_dim, action_dim,  act_max, act_min):
-        super(Actor, self).__init__()
+        super().__init__()
 
         self.fc1 = nn.Linear(obs_dim, 256)
         self.fc2 = nn.Linear(256, 256)

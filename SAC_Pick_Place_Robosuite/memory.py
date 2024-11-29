@@ -3,14 +3,13 @@ import torch
 
 
 class ReplayBuffer:
-    def __init__(self, max_size, obs_dims, n_actions, augment_data=False, augment_noise_ratio=0.1, expert_data_ratio=0.5, device=None):
+    def __init__(self, max_size, obs_dims, n_actions, augment_data=False, augment_noise_ratio=0.1, expert_data_ratio=0.5):
         self.max_memory_size = max_size   # max capacity of memory
         self.memory_count = 0   # will keep track of first unsaved memory(use it to add new memory to replay buffer)
         self.augment_data = augment_data
         self.augment_noise_ratio = augment_noise_ratio   # btw 0 and 1
         self.expert_data_ratio = expert_data_ratio   # btw 0 and 1
         self.expert_data_cutoff = 0
-        self.device = device
 
         self.state_memory = np.zeros((self.max_memory_size, obs_dims), dtype=np.float32)
         self.action_memory = np.zeros((self.max_memory_size, n_actions), dtype=np.int32)
@@ -52,13 +51,6 @@ class ReplayBuffer:
 
             states = states + np.random.normal(0, states_noise_std, states.shape)
             actions = actions + np.random.normal(0, action_noise_std, actions.shape)
-
-        states = torch.from_numpy(np.array(states)).type('torch.FloatTensor').to(self.device)
-        actions = torch.from_numpy(np.array(actions)).type('torch.FloatTensor').to(self.device)
-        rewards = torch.from_numpy(np.array(rewards)).type('torch.FloatTensor').to(self.device)
-        next_states = torch.from_numpy(np.array(next_states)).type('torch.FloatTensor').to(self.device)
-        terminal = torch.from_numpy(np.array(terminal)).type('torch.FloatTensor').to(self.device)
-
         return states, actions, rewards, next_states, terminal   
     
     def save_to_csv(self, filename):

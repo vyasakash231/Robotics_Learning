@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class SoftQNetwork(nn.Module):
     def __init__(self, obs_dim, action_dim):
-        super(SoftQNetwork, self).__init__()
+        super().__init__()
         self.fc1 = nn.Linear(obs_dim + action_dim, 256)
         self.fc2 = nn.Linear(256, 256)
         self.fc3 = nn.Linear(256, 1)
